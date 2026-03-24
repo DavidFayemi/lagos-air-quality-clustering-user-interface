@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  BarChart3,
   BookmarkIcon,
   MapPin,
   Settings,
@@ -16,7 +15,6 @@ import {
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/analytics", icon: BarChart3, label: "Analytics" },
   { href: "/locations", icon: MapPin, label: "Locations" },
   { href: "/bookmarks", icon: BookmarkIcon, label: "Bookmarks" },
   { href: "/settings", icon: Settings, label: "Settings" },

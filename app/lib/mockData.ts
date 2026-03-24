@@ -4,6 +4,7 @@ import type {
   HeatmapData,
   ScatterData,
   LocationData,
+  BookmarkedLocation,
 } from "@/app/lib/types";
 
 export const mockClusterData: ClusterData[] = [
@@ -281,5 +282,24 @@ export const mockLocations: LocationData[] = [
     name: "Yaba",
     coordinates: { lat: 6.52, lng: 3.35 },
     clusters: ["cluster_5"],
+  },
+];
+
+export const mockBookmarkedLocations: BookmarkedLocation[] = [
+  {
+    id: "bm_1",
+    user_id: "user_1",
+    location_name: "Lekki",
+    coordinates: { lat: 6.45, lng: 3.5 },
+    cluster_id: "cluster_1",
+    created_at: "2024-01-15T10:00:00Z",
+  },
+  {
+    id: "bm_2",
+    user_id: "user_1",
+    location_name: "Victoria Island",
+    coordinates: { lat: 6.43, lng: 3.42 },
+    cluster_id: "cluster_2",
+    created_at: "2024-01-14T14:30:00Z",
   },
 ];

@@ -1,26 +1,39 @@
-import { NextResponse } from "next/server";
-import { mockLocations } from "@/app/lib/mockData";
-import type { ApiResponse } from "@/app/lib/types";
+import { NextRequest, NextResponse } from "next/server";
+import { fetchMonthData, getPreviousMonth } from "@/app/lib/apiClient";
+import { buildLocationData } from "@/app/lib/dataTransformers";
+import type { ApiResponse, LocationData, Algorithm } from "@/app/lib/types";
 
-export async function GET(): Promise<
-  NextResponse<ApiResponse<typeof mockLocations>>
-> {
+export async function GET(
+  request: NextRequest
+): Promise<NextResponse<ApiResponse<LocationData[]>>> {
   try {
-    // Simulate some processing time
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    const { searchParams } = request.nextUrl;
+    const algorithm = (searchParams.get("algorithm") ?? "kmeans") as Algorithm;
+    const year = searchParams.get("year");
+    const month = searchParams.get("month");
 
-    return NextResponse.json({
-      success: true,
-      data: mockLocations,
-    });
+    const { year: prevYear, monthName: prevMonth } = getPreviousMonth();
+    const targetYear = year ? Number(year) : prevYear;
+    const targetMonth = month ?? prevMonth;
+
+    const monthData = await fetchMonthData(targetYear, targetMonth);
+    
+    if (!monthData) {
+      return NextResponse.json(
+        { success: false, error: "DATA_NOT_FOUND" },
+        { status: 404 }
+      );
+    }
+
+    const { daily_observations } = monthData;
+    const data = buildLocationData(daily_observations, algorithm);
+
+    return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error("Error fetching locations:", error);
+    console.error("[/api/visualizations/locations]", error);
     return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to fetch locations",
-      },
-      { status: 500 },
+      { success: false, error: "Failed to fetch location data" },
+      { status: 500 }
     );
   }
 }

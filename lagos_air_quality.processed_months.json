@@ -1,0 +1,164 @@
+[{
+  "_id": "2026-02",
+  "year": 2026,
+  "month": 2,
+  "label": "February 2026",
+  "status": "completed",
+  "processed_at": {
+    "$date": "2026-03-22T19:17:36.209Z"
+  },
+  "kmeans": {
+    "n_clusters": 10,
+    "silhouette": 0.4069,
+    "davies_bouldin": 0.7513,
+    "calinski_harabasz": 39.4108,
+    "centroids": [
+      {
+        "cluster": 0,
+        "PM1": 12.625,
+        "PM2_5": 22.625,
+        "PM10": 19.75,
+        "fine_ratio": 1.1412,
+        "humidity": 71.9695,
+        "temperature": 34.8173
+      },
+      {
+        "cluster": 1,
+        "PM1": 23.4582,
+        "PM2_5": 50.0045,
+        "PM10": 34.3789,
+        "fine_ratio": 1.4555,
+        "humidity": 73.6425,
+        "temperature": 34.8197
+      },
+      {
+        "cluster": 2,
+        "PM1": 21.3169,
+        "PM2_5": 40.8899,
+        "PM10": 31.9315,
+        "fine_ratio": 1.2754,
+        "humidity": 74.1812,
+        "temperature": 33.5227
+      },
+      {
+        "cluster": 3,
+        "PM1": 11.3659,
+        "PM2_5": 25.0822,
+        "PM10": 16.7065,
+        "fine_ratio": 1.5045,
+        "humidity": 74.9351,
+        "temperature": 33.7605
+      },
+      {
+        "cluster": 4,
+        "PM1": 25.1187,
+        "PM2_5": 55.2745,
+        "PM10": 39.0045,
+        "fine_ratio": 1.4201,
+        "humidity": 78.6333,
+        "temperature": 31.5667
+      },
+      {
+        "cluster": 5,
+        "PM1": 25.4144,
+        "PM2_5": 52.5342,
+        "PM10": 38.8322,
+        "fine_ratio": 1.352,
+        "humidity": 67.9152,
+        "temperature": 35.3692
+      },
+      {
+        "cluster": 6,
+        "PM1": 29.7593,
+        "PM2_5": 62.9298,
+        "PM10": 45.6632,
+        "fine_ratio": 1.3779,
+        "humidity": 75.2938,
+        "temperature": 34.2628
+      },
+      {
+        "cluster": 7,
+        "PM1": 14.4672,
+        "PM2_5": 25.3592,
+        "PM10": 21.2461,
+        "fine_ratio": 1.1896,
+        "humidity": 80.435,
+        "temperature": 30.9096
+      },
+      {
+        "cluster": 8,
+        "PM1": 21.0385,
+        "PM2_5": 41.6493,
+        "PM10": 31.6825,
+        "fine_ratio": 1.3032,
+        "humidity": 81.3803,
+        "temperature": 31.7364
+      },
+      {
+        "cluster": 9,
+        "PM1": 16.3065,
+        "PM2_5": 32.3761,
+        "PM10": 24.7563,
+        "fine_ratio": 1.3016,
+        "humidity": 59.984,
+        "temperature": 37.8467
+      }
+    ]
+  },
+  "dbscan": {
+    "n_clusters": 2,
+    "eps": 0.3,
+    "min_samples": 3,
+    "n_noise": 52,
+    "silhouette": 0.9048,
+    "davies_bouldin": 0.1038,
+    "calinski_harabasz": 258.1004,
+    "centroids": [
+      {
+        "cluster": 0,
+        "PM1": 25.4474,
+        "PM2_5": 55.9442,
+        "PM10": 39.4552,
+        "fine_ratio": 1.4197,
+        "humidity": 78.7,
+        "temperature": 31.5
+      },
+      {
+        "cluster": 1,
+        "PM1": 23.75,
+        "PM2_5": 50.75,
+        "PM10": 34.25,
+        "fine_ratio": 1.4818,
+        "humidity": 73.5583,
+        "temperature": 35.1396
+      }
+    ]
+  },
+  "hierarchical": {
+    "n_clusters": 2,
+    "linkage_method": "ward",
+    "silhouette": 0.3868,
+    "davies_bouldin": 1.217,
+    "calinski_harabasz": 31.9989,
+    "centroids": [
+      {
+        "cluster": 0,
+        "PM1": 13.5648,
+        "PM2_5": 26.4256,
+        "PM10": 20.2226,
+        "fine_ratio": 1.3199,
+        "humidity": 74.6121,
+        "temperature": 33.3587
+      },
+      {
+        "cluster": 1,
+        "PM1": 24.7399,
+        "PM2_5": 51.6974,
+        "PM10": 37.6143,
+        "fine_ratio": 1.3707,
+        "humidity": 75.0075,
+        "temperature": 33.5631
+      }
+    ]
+  }
+}]

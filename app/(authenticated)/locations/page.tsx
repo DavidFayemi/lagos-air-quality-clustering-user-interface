@@ -3,27 +3,75 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Bookmark } from "lucide-react";
-import type { LocationData } from "@/app/lib/types";
+import type { LocationData, BookmarkedLocation } from "@/app/lib/types";
 
 export default function LocationsPage() {
   const [locations, setLocations] = useState<LocationData[]>([]);
+  const [bookmarkedLocationIds, setBookmarkedLocationIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [loading, setLoading] = useState(true);
+  const [bookmarkLoading, setBookmarkLoading] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchLocations = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch("/api/visualizations/locations");
-        const data = await res.json();
-        setLocations(data.data);
+        // Fetch locations
+        const locRes = await fetch("/api/visualizations/locations");
+        const locData = await locRes.json();
+        setLocations(locData.data);
+
+        // Fetch bookmarks
+        const bmRes = await fetch("/api/bookmarks");
+        const bmData = await bmRes.json();
+        const bookmarkedIds = new Set(
+          bmData.data.map((bm: BookmarkedLocation) => bm.location_name),
+        );
+        setBookmarkedLocationIds(bookmarkedIds);
       } catch (error) {
-        console.error("Error fetching locations:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchLocations();
+    fetchData();
   }, []);
+
+  const handleToggleBookmark = async (location: LocationData) => {
+    setBookmarkLoading(location.id);
+    try {
+      const isBookmarked = bookmarkedLocationIds.has(location.name);
+
+      if (isBookmarked) {
+        // Remove bookmark (in a real app, would call DELETE endpoint)
+        const newBookmarked = new Set(bookmarkedLocationIds);
+        newBookmarked.delete(location.name);
+        setBookmarkedLocationIds(newBookmarked);
+      } else {
+        // Add bookmark
+        const res = await fetch("/api/bookmarks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            location_name: location.name,
+            coordinates: location.coordinates,
+            cluster_id: location.clusters[0],
+          }),
+        });
+
+        if (res.ok) {
+          const newBookmarked = new Set(bookmarkedLocationIds);
+          newBookmarked.add(location.name);
+          setBookmarkedLocationIds(newBookmarked);
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+    } finally {
+      setBookmarkLoading(null);
+    }
+  };
 
   return (
     <motion.div
@@ -77,9 +125,17 @@ export default function LocationsPage() {
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-2 rounded-md hover:bg-accent transition-colors"
+                  onClick={() => handleToggleBookmark(location)}
+                  disabled={bookmarkLoading === location.id}
+                  className="p-2 rounded-md hover:bg-accent transition-colors disabled:opacity-50"
                 >
-                  <Bookmark className="h-5 w-5 text-muted-foreground" />
+                  <Bookmark
+                    className={`h-5 w-5 transition-colors ${
+                      bookmarkedLocationIds.has(location.name)
+                        ? "fill-primary text-primary"
+                        : "text-muted-foreground"
+                    }`}
+                  />
                 </motion.button>
               </div>
 

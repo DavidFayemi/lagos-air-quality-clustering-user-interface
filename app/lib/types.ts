@@ -1,4 +1,4 @@
-// Core types for the dashboard application
+// ─── Core user/auth types ────────────────────────────────────────────────────
 
 export type User = {
   id: string;
@@ -39,10 +39,7 @@ export type BookmarkedLocation = {
   id: string;
   user_id: string;
   location_name: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
+  coordinates: { lat: number; lng: number };
   cluster_id?: string;
   created_at: string;
 };
@@ -56,27 +53,114 @@ export type AuditLog = {
   timestamp: string;
 };
 
-// Visualization data types
+// ─── Real MongoDB / API data shapes ──────────────────────────────────────────
+
+export type AQICategory =
+  | "Good"
+  | "Moderate"
+  | "Unhealthy for Sensitive Groups"
+  | "Unhealthy"
+  | "Very Unhealthy";
+
+export type Algorithm = "kmeans" | "dbscan" | "hierarchical";
+
+/**
+ * One document per sensor per calendar day — from daily_observations collection.
+ * Cluster labels from all three algorithms are included; dbscan_cluster = -1 means noise.
+ */
+export type DailyObservation = {
+  _id: string;            // e.g. "2026-02_4853_2026-02-01"
+  month_id: string;       // e.g. "2026-02"
+  sensor_id: number;
+  location: number;
+  lat: number;
+  lon: number;
+  date: string;           // "YYYY-MM-DD"
+  PM1: number;            // µg/m³
+  PM2_5: number;          // µg/m³
+  PM10: number;           // µg/m³
+  fine_ratio: number;     // PM2.5 / PM10  (>1 = combustion; <1 = dust)
+  coarse_ratio: number;   // PM10 / PM2.5
+  humidity: number;       // %
+  temperature: number;    // °C
+  aqi_category: AQICategory;
+  kmeans_cluster: number;
+  dbscan_cluster: number; // -1 = noise point
+  hierarchical_cluster: number;
+};
+
+/** Centroid for one cluster produced by any algorithm. */
+export type ClusterCentroid = {
+  cluster: number;
+  PM1: number;
+  PM2_5: number;
+  PM10: number;
+  fine_ratio: number;
+  humidity: number;
+  temperature: number;
+};
+
+/** Metrics + centroids for one algorithm run. */
+export type AlgorithmResult = {
+  n_clusters: number;
+  silhouette: number;
+  davies_bouldin: number;
+  calinski_harabasz: number;
+  centroids: ClusterCentroid[];
+};
+
+export type DBSCANResult = AlgorithmResult & {
+  eps: number;
+  min_samples: number;
+  n_noise: number;
+};
+
+export type HierarchicalResult = AlgorithmResult & {
+  linkage_method: string;
+};
+
+/**
+ * One document per processed month — from processed_months collection.
+ * Contains metrics + centroid profiles for all three algorithms.
+ */
+export type ProcessedMonth = {
+  _id: string;            // e.g. "2026-02"
+  year: number;
+  month: number;
+  label: string;          // e.g. "February 2026"
+  status: "completed";
+  processed_at: string;   // ISO date string
+  kmeans: AlgorithmResult;
+  dbscan: DBSCANResult;
+  hierarchical: HierarchicalResult;
+};
+
+/**
+ * Shape returned by the backend API:
+ * GET /data/:year/:month
+ * e.g. https://final-year-project-api-qbur.onrender.com/data/2026/february
+ */
+export type MonthApiResponse = {
+  processed_month: ProcessedMonth;
+  daily_observations: DailyObservation[];
+};
+
+// ─── Chart-ready types (consumed by Recharts components) ─────────────────────
+
 export type ClusterData = {
   id: string;
   name: string;
   location: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
+  coordinates: { lat: number; lng: number };
   pm1_avg: number;
   pm25_avg: number;
   pm10_avg: number;
+  fine_ratio_avg: number;
   humidity_avg: number;
   temperature_avg: number;
-  air_quality_category:
-    | "Good"
-    | "Moderate"
-    | "Unhealthy for Sensitive Groups"
-    | "Unhealthy"
-    | "Very Unhealthy";
+  air_quality_category: AQICategory;
   reading_count: number;
+  algorithm: Algorithm;
 };
 
 export type TimeSeriesDataPoint = {
@@ -86,34 +170,33 @@ export type TimeSeriesDataPoint = {
   pm10: number;
   humidity: number;
   temperature: number;
-  location?: string;
 };
 
 export type HeatmapData = {
-  x: string; // time of day or date
-  y: string; // location
-  value: number; // pollution level
+  x: string; // date
+  y: string; // sensor id (stringified)
+  value: number; // PM2.5
 };
 
 export type ScatterData = {
   pm25: number;
   temperature: number;
   humidity: number;
-  cluster: string;
-  location: string;
+  fine_ratio: number;
+  cluster: string;  // cluster label for legend (e.g. "Cluster 0", "Noise")
+  aqi_category: AQICategory;
+  date: string;
 };
 
 export type LocationData = {
   id: string;
   name: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
+  coordinates: { lat: number; lng: number };
   clusters: string[];
 };
 
-// API Response types
+// ─── Generic API wrapper ──────────────────────────────────────────────────────
+
 export type ApiResponse<T> = {
   success: boolean;
   data?: T;

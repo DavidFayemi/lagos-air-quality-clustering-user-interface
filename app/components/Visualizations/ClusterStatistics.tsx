@@ -3,11 +3,12 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { AlertCircle, TrendingUp } from "lucide-react";
-import type { ClusterData } from "@/app/lib/types";
+import type { ClusterData, Algorithm } from "@/app/lib/types";
 
 interface ClusterStatisticsProps {
   clusters: ClusterData[];
   loading?: boolean;
+  algorithm: Algorithm;
 }
 
 const categoryColors = {
@@ -24,6 +25,7 @@ const categoryColors = {
 export function ClusterStatistics({
   clusters,
   loading,
+  algorithm,
 }: ClusterStatisticsProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -74,25 +76,41 @@ export function ClusterStatistics({
               <h3 className="font-semibold text-foreground text-sm mb-1">
                 {cluster.name}
               </h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground truncate">
                 {cluster.location}
               </p>
             </div>
-            <TrendingUp className="h-5 w-5 text-primary" />
+            {cluster.name === "Noise / Outliers" ? (
+              <AlertCircle className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <TrendingUp className="h-5 w-5 text-primary" />
+            )}
           </div>
 
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-xs">
               <div>
                 <p className="text-muted-foreground">PM2.5</p>
                 <p className="font-bold text-foreground">
-                  {cluster.pm25_avg.toFixed(1)}
+                  {cluster.pm25_avg.toFixed(1)} <span className="font-normal text-[10px] text-muted-foreground">µg/m³</span>
                 </p>
               </div>
               <div>
                 <p className="text-muted-foreground">PM10</p>
                 <p className="font-bold text-foreground">
-                  {cluster.pm10_avg.toFixed(1)}
+                  {cluster.pm10_avg.toFixed(1)} <span className="font-normal text-[10px] text-muted-foreground">µg/m³</span>
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground" title="PM2.5 / PM10 ratio (>1 is combustion)">Fine Ratio</p>
+                <p className="font-bold text-foreground">
+                  {cluster.fine_ratio_avg.toFixed(2)}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Temperature</p>
+                <p className="font-bold text-foreground">
+                  {cluster.temperature_avg.toFixed(1)} <span className="font-normal text-[10px] text-muted-foreground">°C</span>
                 </p>
               </div>
             </div>

@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchMonthData, getPreviousMonth } from "@/app/lib/apiClient";
-import { buildClusterData } from "@/app/lib/dataTransformers";
-import type { ApiResponse, ClusterData, Algorithm } from "@/app/lib/types";
+import { buildAQIDistribution } from "@/app/lib/dataTransformers";
+import type { ApiResponse, ProcessedMonth } from "@/app/lib/types";
+import type { AQIDistributionEntry } from "@/app/lib/dataTransformers";
+
+type MonthSummaryResponse = {
+  processed_month: ProcessedMonth;
+  aqi_distribution: AQIDistributionEntry[];
+  total_observations: number;
+};
 
 export async function GET(
   request: NextRequest
-): Promise<NextResponse<ApiResponse<ClusterData[]>>> {
+): Promise<NextResponse<ApiResponse<MonthSummaryResponse>>> {
   try {
     const { searchParams } = request.nextUrl;
-    const algorithm = (searchParams.get("algorithm") ?? "kmeans") as Algorithm;
     const year = searchParams.get("year");
     const month = searchParams.get("month");
 
@@ -27,13 +33,18 @@ export async function GET(
 
     const { processed_month, daily_observations } = monthData;
 
-    const data = buildClusterData(processed_month, daily_observations, algorithm);
-
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({
+      success: true,
+      data: {
+        processed_month,
+        aqi_distribution: buildAQIDistribution(daily_observations),
+        total_observations: daily_observations.length,
+      },
+    });
   } catch (error) {
-    console.error("[/api/visualizations/clusters]", error);
+    console.error("[/api/visualizations/month]", error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch cluster data" },
+      { success: false, error: "Failed to fetch month summary" },
       { status: 500 }
     );
   }

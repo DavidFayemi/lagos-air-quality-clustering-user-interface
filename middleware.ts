@@ -47,7 +47,6 @@ export async function middleware(request: NextRequest) {
   const isProtectedPage =
     pathname.startsWith("/(authenticated)") ||
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/analytics") ||
     pathname.startsWith("/locations") ||
     pathname.startsWith("/bookmarks") ||
     pathname.startsWith("/settings");

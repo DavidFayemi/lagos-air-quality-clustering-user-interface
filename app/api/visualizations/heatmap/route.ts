@@ -1,26 +1,38 @@
-import { NextResponse } from "next/server";
-import { mockHeatmapData } from "@/app/lib/mockData";
-import type { ApiResponse } from "@/app/lib/types";
+import { NextRequest, NextResponse } from "next/server";
+import { fetchMonthData, getPreviousMonth } from "@/app/lib/apiClient";
+import { buildHeatmap } from "@/app/lib/dataTransformers";
+import type { ApiResponse, HeatmapData } from "@/app/lib/types";
 
-export async function GET(): Promise<
-  NextResponse<ApiResponse<typeof mockHeatmapData>>
-> {
+export async function GET(
+  request: NextRequest
+): Promise<NextResponse<ApiResponse<HeatmapData[]>>> {
   try {
-    // Simulate some processing time
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    const { searchParams } = request.nextUrl;
+    const year = searchParams.get("year");
+    const month = searchParams.get("month");
 
-    return NextResponse.json({
-      success: true,
-      data: mockHeatmapData,
-    });
+    const { year: prevYear, monthName: prevMonth } = getPreviousMonth();
+    const targetYear = year ? Number(year) : prevYear;
+    const targetMonth = month ?? prevMonth;
+
+    const monthData = await fetchMonthData(targetYear, targetMonth);
+    
+    if (!monthData) {
+      return NextResponse.json(
+        { success: false, error: "DATA_NOT_FOUND" },
+        { status: 404 }
+      );
+    }
+
+    const { daily_observations } = monthData;
+    const data = buildHeatmap(daily_observations);
+
+    return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error("Error fetching heatmap data:", error);
+    console.error("[/api/visualizations/heatmap]", error);
     return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to fetch heatmap data",
-      },
-      { status: 500 },
+      { success: false, error: "Failed to fetch heatmap data" },
+      { status: 500 }
     );
   }
 }
