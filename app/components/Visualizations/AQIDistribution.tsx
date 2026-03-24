@@ -92,7 +92,7 @@ export function AQIDistribution({
             </Pie>
             <Tooltip content={<CustomTooltip />} />
             <Legend
-              formatter={(value) => (
+              formatter={(value: any) => (
                 <span className="text-xs text-foreground">{value}</span>
               )}
             />

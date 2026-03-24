@@ -111,8 +111,8 @@ export function ScatterPlot({ data, loading }: ScatterPlotProps) {
             }}
             labelStyle={{ color: "hsl(var(--foreground))" }}
             cursor={{ strokeDasharray: "3 3" }}
-            formatter={(value: number, name: string) => [
-              `${value.toFixed(1)}`,
+            formatter={(value: any, name: any) => [
+              `${typeof value === 'number' ? value.toFixed(1) : value}`,
               name,
             ]}
           />
