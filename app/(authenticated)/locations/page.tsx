@@ -24,7 +24,7 @@ export default function LocationsPage() {
         // Fetch bookmarks
         const bmRes = await fetch("/api/bookmarks");
         const bmData = await bmRes.json();
-        const bookmarkedIds = new Set(
+        const bookmarkedIds = new Set<string>(
           bmData.data.map((bm: BookmarkedLocation) => bm.location_name),
         );
         setBookmarkedLocationIds(bookmarkedIds);
