@@ -72,12 +72,12 @@ export function VisualizationGrid({
       </section>
 
       {/* Cluster Map - Full Width */}
-      <section>
+      {/* <section>
         <h2 className="text-lg font-semibold text-foreground mb-4">
           Geographic Distribution
         </h2>
         <ClusterMap clusters={clusters} loading={loading} />
-      </section>
+      </section> */}
 
       {/* Time Series Chart - Full Width */}
       <section>
