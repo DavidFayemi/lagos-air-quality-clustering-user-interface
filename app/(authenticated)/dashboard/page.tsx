@@ -224,7 +224,7 @@ export default function DashboardPage() {
           <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
             Pipeline data not available for this month. 
             <span className="font-normal block mt-0.5 opacity-80">
-              The clustering models may not have run, or sensors were offline. Please select another month.
+              The clustering models may not have enough data, or sensors were offline. Please select another month.
             </span>
           </p>
         </motion.div>
